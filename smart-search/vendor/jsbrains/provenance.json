@@ -1,0 +1,298 @@
+{
+  "commit": "ba80525b083cf515555cedbdc6294a2d0aa5da68",
+  "files": [
+    {
+      "path": "MIT_LICENSE",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/MIT_LICENSE",
+      "upstream_sha256": "5e6795337f46abbe1b05b0a7f03a27486264eaa2a918f805bae793c92bea1ca4",
+      "local_sha256": "5cff302919699f50bfd8e0ec0df03541f5e927c3173038a07dc35c38114d1d37"
+    },
+    {
+      "path": "smart-embed-model/adapters/_adapter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-embed-model/adapters/_adapter.js",
+      "upstream_sha256": "fe9ff586f788cb3aac4ed3bbb7921857f40adbd2035753e3cb277185987f56e9",
+      "local_sha256": "1fcde84a7ca590972c49d7fd247e2636a18fd73365bd66fffde457e42e7da5aa"
+    },
+    {
+      "path": "smart-embed-model/adapters/transformers.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-embed-model/adapters/transformers.js",
+      "upstream_sha256": "3a5390dd1fac05f66df762290cf25e07b4edba526f5d5d95dda3645145d360f1",
+      "local_sha256": "ef0bedec029c509261cc68ada89dd1a317f966596fde0a8c7d33e6af3a2e7f11"
+    },
+    {
+      "path": "smart-model/adapters/_adapter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-model/adapters/_adapter.js",
+      "upstream_sha256": "ee46fd73f570249900a9894def382d11116aad47450ac81251376448690d3cfe",
+      "local_sha256": "26ef996baaa0743a864466ab4b41124587355f14f772c77c77ba7b51c0e41f26"
+    },
+    {
+      "path": "smart-utils/cos_sim.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/cos_sim.js",
+      "upstream_sha256": "ac0f0b1675d24ebc3143bbe0bbbc829e9a8efb06b27697cb27217ca96a112c01",
+      "local_sha256": "69b36cd730f7d90c52068337d2c2048ada94495d293a54908103122c486b7eb5"
+    },
+    {
+      "path": "smart-utils/results_acc.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/results_acc.js",
+      "upstream_sha256": "afc661a63b99f7c59a44ead42cd57e230ddc5f709d43e08bbc11f7ca9a9a8025",
+      "local_sha256": "610162c9c6b33a0743ca2c8882784e5935d338f06ec2ca2debd3c01ed4428028"
+    },
+    {
+      "path": "smart-blocks/parsers/markdown.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-blocks/parsers/markdown.js",
+      "upstream_sha256": "1517a5ec485a89c6a81fd2a1dfa2980992c0cf40823f6493602541c05a0d5610",
+      "local_sha256": "1517a5ec485a89c6a81fd2a1dfa2980992c0cf40823f6493602541c05a0d5610"
+    },
+    {
+      "path": "smart-collections/adapters/_adapter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/adapters/_adapter.js",
+      "upstream_sha256": "ef57e1edf4773d241e5ccb0050e91c04b6fc365da89e68340d6961f4e274d175",
+      "local_sha256": "ef57e1edf4773d241e5ccb0050e91c04b6fc365da89e68340d6961f4e274d175"
+    },
+    {
+      "path": "smart-collections/adapters/_file.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/adapters/_file.js",
+      "upstream_sha256": "ebbea911a61bc679040fda23600fe8c9fcd18f82b74688ad2704275155c8a1f1",
+      "local_sha256": "ebbea911a61bc679040fda23600fe8c9fcd18f82b74688ad2704275155c8a1f1"
+    },
+    {
+      "path": "smart-collections/adapters/ajson_multi_file.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/adapters/ajson_multi_file.js",
+      "upstream_sha256": "a86fdb8ba5783f6f2c19f31aff600a47cea8fdc52c622c646c5881aae99b07c5",
+      "local_sha256": "a86fdb8ba5783f6f2c19f31aff600a47cea8fdc52c622c646c5881aae99b07c5"
+    },
+    {
+      "path": "smart-collections/collection.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/collection.js",
+      "upstream_sha256": "5c0579c8a435512549ab2c591486c3fbdf19c9b98a79c531987103003d094fb1",
+      "local_sha256": "aa07a0975258190ab622163437723254981e1abdfe721faf419db0dd0b6e2221"
+    },
+    {
+      "path": "smart-collections/item.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/item.js",
+      "upstream_sha256": "7f263894779a661066c91b0b73244a4f23929a8c550dd0234249fcb64258a279",
+      "local_sha256": "b10c0a51b6cf290c4823f29b1ab6e64dcb811cf1ddbae96160c2abeec4c35837"
+    },
+    {
+      "path": "smart-collections/main.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/main.js",
+      "upstream_sha256": "ff0dd118ab6424158829a001f892bf4a9c5a645b029a34bc777cfe39f1b9a729",
+      "local_sha256": "ff0dd118ab6424158829a001f892bf4a9c5a645b029a34bc777cfe39f1b9a729"
+    },
+    {
+      "path": "smart-collections/utils/collection_instance_name_from.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/utils/collection_instance_name_from.js",
+      "upstream_sha256": "1ea44968ee0561a752dfdb57c2303ac1d5447bbd553c2a65b34c4639c541416f",
+      "local_sha256": "1ea44968ee0561a752dfdb57c2303ac1d5447bbd553c2a65b34c4639c541416f"
+    },
+    {
+      "path": "smart-collections/utils/create_actions_proxy.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/utils/create_actions_proxy.js",
+      "upstream_sha256": "f73cf491ed76803eb5a902cdb4fcf5a6a12f76c949c5e9da57209e3d937ea1a8",
+      "local_sha256": "f73cf491ed76803eb5a902cdb4fcf5a6a12f76c949c5e9da57209e3d937ea1a8"
+    },
+    {
+      "path": "smart-collections/utils/deep_equal.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/utils/deep_equal.js",
+      "upstream_sha256": "00cf399d6687ed39009063e3d7bb1fa1be4a8e46e8c53bde8ca4093d09b28a1c",
+      "local_sha256": "00cf399d6687ed39009063e3d7bb1fa1be4a8e46e8c53bde8ca4093d09b28a1c"
+    },
+    {
+      "path": "smart-collections/utils/get_item_display_name.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/utils/get_item_display_name.js",
+      "upstream_sha256": "7442107d6d6b6356b5878716d48329e8881889ec4ef5ad574f527ed6dfead2e0",
+      "local_sha256": "7442107d6d6b6356b5878716d48329e8881889ec4ef5ad574f527ed6dfead2e0"
+    },
+    {
+      "path": "smart-collections/utils/helpers.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-collections/utils/helpers.js",
+      "upstream_sha256": "56d0ec9fcd39f24beb2be81a8aaea5a258147e6e71a37be74c0a725cd3639c0c",
+      "local_sha256": "60306486a8a708eb776ca731f0534b715f824b774b2de92cea2417ecf8422cff"
+    },
+    {
+      "path": "smart-embed-model/smart_embed_model.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-embed-model/smart_embed_model.js",
+      "upstream_sha256": "965a298423405c43d26c5ba760831f34ac57227f646501ca430ce712d9607467",
+      "local_sha256": "676baada4d86db6a8ab509404cd3bdce4e37339b0b919ec640303cb6b2604f27"
+    },
+    {
+      "path": "smart-entities/actions/find_connections.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/actions/find_connections.js",
+      "upstream_sha256": "36c9f9ab5f76757672f1e117af20e7558e83e13fae3c7bdb43963d79c274627b",
+      "local_sha256": "d14ec124b90fc4fcea9a133a6cc1496fc0fab9ea03a3a1ef05041317a197bfe5"
+    },
+    {
+      "path": "smart-entities/adapters/_adapter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/adapters/_adapter.js",
+      "upstream_sha256": "1126a48367164d182b150905993cdd3f68408d2e8a1e5656f48004e23826b9d8",
+      "local_sha256": "1126a48367164d182b150905993cdd3f68408d2e8a1e5656f48004e23826b9d8"
+    },
+    {
+      "path": "smart-entities/adapters/default.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/adapters/default.js",
+      "upstream_sha256": "7b51c00a9f971bd27ba65233f73815541c156cbf398c55169a8770c0685bd591",
+      "local_sha256": "a7b285401d920d183179f3994b978c3a5cbf95941a5ad4226577aad9c987d1d1"
+    },
+    {
+      "path": "smart-entities/main.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/main.js",
+      "upstream_sha256": "a0005a100376fc56ea9b83b3221abcbf47bcbcca87fdf91e20e2c59da7ce063a",
+      "local_sha256": "5f5b0565ce4cd967002d8070eace80c42136148d817d40c3cbb64688645a6d10"
+    },
+    {
+      "path": "smart-entities/smart_entities.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/smart_entities.js",
+      "upstream_sha256": "266d5953308fb067a05022bfd1d0a1e6c5716bc14665343a422b14c5bbb8ff13",
+      "local_sha256": "0eaa1678112083ac76e02ccd4a018d9d7eaa7ee4cd470bf1fa1e1f82a596837b"
+    },
+    {
+      "path": "smart-entities/smart_entity.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/smart_entity.js",
+      "upstream_sha256": "d2079bebe22d7f33ba5fc8bff4d1bceae0efc8e9324c98a0e547afec02eb56cd",
+      "local_sha256": "fc37d6b77126a287ac6f897e5e54bce001bac88eb875be2ce73cd35795ab778b"
+    },
+    {
+      "path": "smart-entities/utils/frontmatter_filter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-entities/utils/frontmatter_filter.js",
+      "upstream_sha256": "7f131138a86c4f4db8946fb5e260d977852b074f170f1e555ac8cf5e6b8a0046",
+      "local_sha256": "7f131138a86c4f4db8946fb5e260d977852b074f170f1e555ac8cf5e6b8a0046"
+    },
+    {
+      "path": "smart-fs/adapters/node_fs.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-fs/adapters/node_fs.js",
+      "upstream_sha256": "e0cfcc6fb68eb605932ba828b2d1e777f95460ff98ed20219b18eafbfee258f6",
+      "local_sha256": "a86c51d4308edcfc5a169658fd6b2b2c736140be7c85fe32e416677d707a42ca"
+    },
+    {
+      "path": "smart-model/smart_model.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-model/smart_model.js",
+      "upstream_sha256": "1be7889e562b0be38f087156d5166ee4798d92ba2b945d624be36cf0501ce6c0",
+      "local_sha256": "1be7889e562b0be38f087156d5166ee4798d92ba2b945d624be36cf0501ce6c0"
+    },
+    {
+      "path": "smart-sources/actions/find_connections.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/actions/find_connections.js",
+      "upstream_sha256": "82dec10c833abfc52c3ccd4b58847b7fe2c87573858032a90a6efe9e74982eaa",
+      "local_sha256": "82f753d1943259320fbaa5e1c5990ec55c7afc17f1b8e608912615ba98d3958d"
+    },
+    {
+      "path": "smart-sources/actions/get_embed_input/data.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/actions/get_embed_input/data.js",
+      "upstream_sha256": "96e1ffd9244481607607874a1813296bc1c6c2d82eebff228858592cd6f469c6",
+      "local_sha256": "96e1ffd9244481607607874a1813296bc1c6c2d82eebff228858592cd6f469c6"
+    },
+    {
+      "path": "smart-sources/actions/get_embed_input/markdown.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/actions/get_embed_input/markdown.js",
+      "upstream_sha256": "f902e4affe6154bcb67699c4ef0079c2e1467abfcb11113cf6cbe0be6e71171d",
+      "local_sha256": "f902e4affe6154bcb67699c4ef0079c2e1467abfcb11113cf6cbe0be6e71171d"
+    },
+    {
+      "path": "smart-sources/actions/get_embed_input/text.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/actions/get_embed_input/text.js",
+      "upstream_sha256": "e20daf75d3a885d344979ab713dd26acaa2f39fc4cb71d856fe2743f6dcb042f",
+      "local_sha256": "e20daf75d3a885d344979ab713dd26acaa2f39fc4cb71d856fe2743f6dcb042f"
+    },
+    {
+      "path": "smart-sources/adapters/_adapter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/adapters/_adapter.js",
+      "upstream_sha256": "2a7f6368b979a719b63df29f450e3fe68d89a07a66871af08b28eb93087308a1",
+      "local_sha256": "c5231b395e780eb6d48b8c6a785e24d949069d35306ccce383d3b379ae08a314"
+    },
+    {
+      "path": "smart-sources/adapters/_file.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/adapters/_file.js",
+      "upstream_sha256": "464e6dbb19ef544b2b24c23aa7e0a96d85890cc38a9d083831352ca6a3ae19b2",
+      "local_sha256": "60f0a2f9dea3297c5656e427a402d525c4da6a4c875929e2ab83cce3dfcbcf77"
+    },
+    {
+      "path": "smart-sources/adapters/data/ajson_multi_file.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/adapters/data/ajson_multi_file.js",
+      "upstream_sha256": "b957019718698e6c307dafbe28b02e43b9af011be49821ba82e07794ef98b582",
+      "local_sha256": "43c6c273ed48b84c67ff80275d8bdca3803bb4e11e11733b3f8fcde65c86a208"
+    },
+    {
+      "path": "smart-sources/adapters/markdown_source.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/adapters/markdown_source.js",
+      "upstream_sha256": "ecf16103c1a8b1ff914f462e678db20394a99a314bc32614f1061b52a2227e7e",
+      "local_sha256": "ecf16103c1a8b1ff914f462e678db20394a99a314bc32614f1061b52a2227e7e"
+    },
+    {
+      "path": "smart-sources/main.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/main.js",
+      "upstream_sha256": "24bead2e3571821a853d19596b9843b3b5e93c732823a64b4d0a9178de03dad2",
+      "local_sha256": "24bead2e3571821a853d19596b9843b3b5e93c732823a64b4d0a9178de03dad2"
+    },
+    {
+      "path": "smart-sources/smart_source.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/smart_source.js",
+      "upstream_sha256": "fba9343e65036cb52e67555339ba4d395ba23c969089eab6131d5b0ad3b2b6fc",
+      "local_sha256": "7b5094331188b7de5fa5abf74bcc4a7ce86e30038acaa69efeeff20fb3a8268e"
+    },
+    {
+      "path": "smart-sources/smart_sources.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/smart_sources.js",
+      "upstream_sha256": "2f9f803206dc1010c1393ccdf2a900fcd77af55fdfddb6c61f52c8301f83b9eb",
+      "local_sha256": "622cc64c350f1ea20cae1ab52dee80d2207d2bf2bc9a865ce1876cea7ad55d52"
+    },
+    {
+      "path": "smart-sources/utils/exclusions.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/utils/exclusions.js",
+      "upstream_sha256": "bbcfcc3a9bee0f91a5b883d5ed3138deac5cf18805ae55d62f38546129650c44",
+      "local_sha256": "bbcfcc3a9bee0f91a5b883d5ed3138deac5cf18805ae55d62f38546129650c44"
+    },
+    {
+      "path": "smart-sources/utils/get_markdown_links.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/utils/get_markdown_links.js",
+      "upstream_sha256": "f2a488afba03db64c5ed0df2e8b61dfa341bd0019c0e6d9f0e3ad595271c49e2",
+      "local_sha256": "f2a488afba03db64c5ed0df2e8b61dfa341bd0019c0e6d9f0e3ad595271c49e2"
+    },
+    {
+      "path": "smart-sources/utils/get_markdown_tags.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/utils/get_markdown_tags.js",
+      "upstream_sha256": "1102713783f0bf4361a9322fbc9735d014e9cfb56f07579c32bbed2ce827f00b",
+      "local_sha256": "1102713783f0bf4361a9322fbc9735d014e9cfb56f07579c32bbed2ce827f00b"
+    },
+    {
+      "path": "smart-sources/utils/parse_frontmatter.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-sources/utils/parse_frontmatter.js",
+      "upstream_sha256": "58fd12c93be4691cbb88dad93b5a7861baa9b5341397af7012c58905abd322fb",
+      "local_sha256": "58fd12c93be4691cbb88dad93b5a7861baa9b5341397af7012c58905abd322fb"
+    },
+    {
+      "path": "smart-utils/camel_case_to_snake_case.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/camel_case_to_snake_case.js",
+      "upstream_sha256": "c5c5ca5cc7a7d1de986430b93b7452ec3008cadfb8d2a6a3a7af97732ab4e6eb",
+      "local_sha256": "c5c5ca5cc7a7d1de986430b93b7452ec3008cadfb8d2a6a3a7af97732ab4e6eb"
+    },
+    {
+      "path": "smart-utils/create_hash.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/create_hash.js",
+      "upstream_sha256": "536702d76e2bfc94d1be4ba2ff7a54a08122e13fb5a565604ea99b20f8c0d762",
+      "local_sha256": "536702d76e2bfc94d1be4ba2ff7a54a08122e13fb5a565604ea99b20f8c0d762"
+    },
+    {
+      "path": "smart-utils/deep_merge.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/deep_merge.js",
+      "upstream_sha256": "e877996efb393981747d463ae0fc735272175abb4c04465145584f868897022c",
+      "local_sha256": "e877996efb393981747d463ae0fc735272175abb4c04465145584f868897022c"
+    },
+    {
+      "path": "smart-utils/geom.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/geom.js",
+      "upstream_sha256": "10607de578f2a247db2703dae0191268837c2fd05ad5c7ce85123a0ccf306267",
+      "local_sha256": "10607de578f2a247db2703dae0191268837c2fd05ad5c7ce85123a0ccf306267"
+    },
+    {
+      "path": "smart-utils/sort_by_score.js",
+      "upstream_url": "https://raw.githubusercontent.com/brianpetro/jsbrains/ba80525b083cf515555cedbdc6294a2d0aa5da68/smart-utils/sort_by_score.js",
+      "upstream_sha256": "205c119f4637eaf01cdb2d0dfa95ac19b2c091d08971503d00c48498767eb465",
+      "local_sha256": "205c119f4637eaf01cdb2d0dfa95ac19b2c091d08971503d00c48498767eb465"
+    }
+  ],
+  "local_patches": [
+    "Rewrite bare smart-* imports to fixed local relative paths",
+    "Reorder Transformers model catalog/defaults before class static defaults",
+    "Allow configurable pooling with mean as fallback for CLS-based BGE model"
+  ]
+}

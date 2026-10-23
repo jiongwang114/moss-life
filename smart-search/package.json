@@ -1,0 +1,9 @@
+{
+  "name": "moss-smart-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test worker.test.mjs"},
+  "dependencies": {"@huggingface/transformers": "3.8.1"},
+  "overrides": {"sharp": "0.35.5", "global-agent": "4.1.3"}
+}

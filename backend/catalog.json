@@ -1,0 +1,810 @@
+[
+  {
+    "id": "scene.01",
+    "name": "工作",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 1
+  },
+  {
+    "id": "scene.02",
+    "name": "学习",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 2
+  },
+  {
+    "id": "scene.03",
+    "name": "日常",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 3
+  },
+  {
+    "id": "scene.04",
+    "name": "家庭",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 4
+  },
+  {
+    "id": "scene.05",
+    "name": "身体健康",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 5
+  },
+  {
+    "id": "scene.06",
+    "name": "心理情绪",
+    "dimension": "scene",
+    "parent_id": null,
+    "level": 1,
+    "order": 6
+  },
+  {
+    "id": "type.01",
+    "name": "经历",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 1
+  },
+  {
+    "id": "type.02",
+    "name": "情绪",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 2
+  },
+  {
+    "id": "type.03",
+    "name": "想法",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 3
+  },
+  {
+    "id": "type.04",
+    "name": "疑问",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 4
+  },
+  {
+    "id": "type.05",
+    "name": "知识",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 5
+  },
+  {
+    "id": "type.06",
+    "name": "计划",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 6
+  },
+  {
+    "id": "type.07",
+    "name": "决策",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 7
+  },
+  {
+    "id": "type.08",
+    "name": "复盘",
+    "dimension": "record_type",
+    "parent_id": null,
+    "level": 1,
+    "order": 8
+  },
+  {
+    "id": "topic.01",
+    "name": "哲学",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 1
+  },
+  {
+    "id": "topic.01.01",
+    "name": "人生与意义",
+    "dimension": "topic",
+    "parent_id": "topic.01",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.01.02",
+    "name": "价值与伦理",
+    "dimension": "topic",
+    "parent_id": "topic.01",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.01.03",
+    "name": "知识与认识",
+    "dimension": "topic",
+    "parent_id": "topic.01",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.01.04",
+    "name": "存在与实在",
+    "dimension": "topic",
+    "parent_id": "topic.01",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.01.05",
+    "name": "逻辑与论证",
+    "dimension": "topic",
+    "parent_id": "topic.01",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.02",
+    "name": "心理",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 2
+  },
+  {
+    "id": "topic.02.01",
+    "name": "情绪与调节",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.02.02",
+    "name": "认知与记忆",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.02.03",
+    "name": "动机与习惯",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.02.04",
+    "name": "人格与自我",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.02.05",
+    "name": "社会心理",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.02.06",
+    "name": "发展心理",
+    "dimension": "topic",
+    "parent_id": "topic.02",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.03",
+    "name": "社会",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 3
+  },
+  {
+    "id": "topic.03.01",
+    "name": "社会结构与流动",
+    "dimension": "topic",
+    "parent_id": "topic.03",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.03.02",
+    "name": "人口与家庭",
+    "dimension": "topic",
+    "parent_id": "topic.03",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.03.03",
+    "name": "群体与社区",
+    "dimension": "topic",
+    "parent_id": "topic.03",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.03.04",
+    "name": "劳动与就业",
+    "dimension": "topic",
+    "parent_id": "topic.03",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.03.05",
+    "name": "社会问题与公益",
+    "dimension": "topic",
+    "parent_id": "topic.03",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.04",
+    "name": "政治与法律",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 4
+  },
+  {
+    "id": "topic.04.01",
+    "name": "政治制度",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.04.02",
+    "name": "公共治理",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.04.03",
+    "name": "公共政策",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.04.04",
+    "name": "国际关系",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.04.05",
+    "name": "法律与权利",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.04.06",
+    "name": "司法与法治",
+    "dimension": "topic",
+    "parent_id": "topic.04",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.05",
+    "name": "经济与金融",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 5
+  },
+  {
+    "id": "topic.05.01",
+    "name": "宏观经济",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.05.02",
+    "name": "产业与市场",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.05.03",
+    "name": "企业与商业",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.05.04",
+    "name": "货币与金融",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.05.05",
+    "name": "投资与理财",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.05.06",
+    "name": "消费与个人财务",
+    "dimension": "topic",
+    "parent_id": "topic.05",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.06",
+    "name": "历史",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 6
+  },
+  {
+    "id": "topic.06.01",
+    "name": "中国历史",
+    "dimension": "topic",
+    "parent_id": "topic.06",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.06.02",
+    "name": "世界历史",
+    "dimension": "topic",
+    "parent_id": "topic.06",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.06.03",
+    "name": "历史人物",
+    "dimension": "topic",
+    "parent_id": "topic.06",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.06.04",
+    "name": "社会与生活史",
+    "dimension": "topic",
+    "parent_id": "topic.06",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.06.05",
+    "name": "历史研究",
+    "dimension": "topic",
+    "parent_id": "topic.06",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.07",
+    "name": "文化与艺术",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 7
+  },
+  {
+    "id": "topic.07.01",
+    "name": "语言与文字",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.07.02",
+    "name": "文学",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.07.03",
+    "name": "思想与宗教文化",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.07.04",
+    "name": "传统与民俗",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.07.05",
+    "name": "影视",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.07.06",
+    "name": "音乐",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.07.07",
+    "name": "视觉艺术",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 7
+  },
+  {
+    "id": "topic.07.08",
+    "name": "表演艺术",
+    "dimension": "topic",
+    "parent_id": "topic.07",
+    "level": 2,
+    "order": 8
+  },
+  {
+    "id": "topic.08",
+    "name": "教育",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 8
+  },
+  {
+    "id": "topic.08.01",
+    "name": "教育制度",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.08.02",
+    "name": "学校教育",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.08.03",
+    "name": "职业教育",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.08.04",
+    "name": "家庭教育",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.08.05",
+    "name": "教学与学习方法",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.08.06",
+    "name": "考试与评价",
+    "dimension": "topic",
+    "parent_id": "topic.08",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.09",
+    "name": "自然科学",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 9
+  },
+  {
+    "id": "topic.09.01",
+    "name": "数学",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.09.02",
+    "name": "物理",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.09.03",
+    "name": "化学",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.09.04",
+    "name": "生物",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.09.05",
+    "name": "天文学",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.09.06",
+    "name": "地球科学",
+    "dimension": "topic",
+    "parent_id": "topic.09",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.10",
+    "name": "科技与工程",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 10
+  },
+  {
+    "id": "topic.10.01",
+    "name": "人工智能",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.10.02",
+    "name": "软件与互联网",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.10.03",
+    "name": "电子与数码",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.10.04",
+    "name": "机械与制造",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.10.05",
+    "name": "土木与交通",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.10.06",
+    "name": "能源技术",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.10.07",
+    "name": "航天技术",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 7
+  },
+  {
+    "id": "topic.10.08",
+    "name": "生物技术",
+    "dimension": "topic",
+    "parent_id": "topic.10",
+    "level": 2,
+    "order": 8
+  },
+  {
+    "id": "topic.11",
+    "name": "医学与健康",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 11
+  },
+  {
+    "id": "topic.11.01",
+    "name": "疾病与诊疗",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.11.02",
+    "name": "药物与治疗",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.11.03",
+    "name": "营养与饮食",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.11.04",
+    "name": "睡眠与作息",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.11.05",
+    "name": "运动与康复",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.11.06",
+    "name": "心理健康",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 6
+  },
+  {
+    "id": "topic.11.07",
+    "name": "预防与保健",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 7
+  },
+  {
+    "id": "topic.11.08",
+    "name": "公共卫生",
+    "dimension": "topic",
+    "parent_id": "topic.11",
+    "level": 2,
+    "order": 8
+  },
+  {
+    "id": "topic.12",
+    "name": "环境与生态",
+    "dimension": "topic",
+    "parent_id": null,
+    "level": 1,
+    "order": 12
+  },
+  {
+    "id": "topic.12.01",
+    "name": "气候变化",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 1
+  },
+  {
+    "id": "topic.12.02",
+    "name": "生态与生物多样性",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 2
+  },
+  {
+    "id": "topic.12.03",
+    "name": "污染与治理",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 3
+  },
+  {
+    "id": "topic.12.04",
+    "name": "资源利用",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 4
+  },
+  {
+    "id": "topic.12.05",
+    "name": "环境保护",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 5
+  },
+  {
+    "id": "topic.12.06",
+    "name": "可持续发展",
+    "dimension": "topic",
+    "parent_id": "topic.12",
+    "level": 2,
+    "order": 6
+  }
+]

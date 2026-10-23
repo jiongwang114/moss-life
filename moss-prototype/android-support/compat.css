@@ -1,0 +1,17 @@
+/* These fallbacks are used only in the packaged Android frontend. */
+.native-host .studio {min-height:100vh}
+.native-host .device {height:100vh}
+@supports (height:100dvh) {
+  .native-host .studio {min-height:100dvh}
+  .native-host .device {height:100dvh}
+}
+.collapse-region {display:block}
+.collapse-region:not(.is-open) {display:none}
+.collapse-region.is-open {opacity:1}
+.tag-editable.is-tag-removing {padding-right:36px}
+.tag-editable .tag-remove {right:4px;transform:translateY(-50%)}
+@supports (translate:0 -50%) {.tag-editable .tag-remove {transform:none}}
+@supports not (gap:8px) {.search-controls .btn {margin-left:8px}}
+@supports not (overflow-wrap:anywhere) {
+  .record-title,.preview,.markdown,.tag,.status-note {overflow-wrap:break-word;word-wrap:break-word}
+}

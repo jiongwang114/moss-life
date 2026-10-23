@@ -1,0 +1,29 @@
+{
+  "name": "moss-prototype",
+  "version": "1.0.0",
+  "description": "MOSS - standalone tactile mobile recording prototype with an explicit mock state machine",
+  "main": "index.js",
+  "scripts": {
+    "build:android": "node build-android.cjs",
+    "test:android-compat": "node verify-android-compat.cjs",
+    "start": "node server.mjs",
+    "test": "node verify.cjs",
+    "test:extended": "node verify-extended.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dompurify": "^3.4.17",
+    "fflate": "^0.8.3",
+    "marked": "^12.0.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "abortcontroller-polyfill": "1.7.8",
+    "acorn": "8.19.0",
+    "esbuild": "0.28.1",
+    "regexpu-core": "6.4.0"
+  }
+}

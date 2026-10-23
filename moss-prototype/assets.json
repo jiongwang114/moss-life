@@ -1,0 +1,6 @@
+[
+  "index.html", "style.css", "app.js", "account-ui.js", "release.js",
+  "api-client.js", "config.js", "native-host.js", "ui-renderer.js", "search-ui.js", "engine.js",
+  "vendor/marked.js", "vendor/purify.js", "vendor/fflate.js",
+  "vendor/marked-LICENSE.md", "vendor/dompurify-LICENSE.txt", "vendor/fflate-LICENSE.txt"
+]

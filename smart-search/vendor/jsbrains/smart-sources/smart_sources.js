@@ -1,0 +1,944 @@
+import { SmartEntities } from "../smart-entities/main.js";
+import { sort_by_score } from "../smart-utils/sort_by_score.js";
+import { normalize_exclusion_list } from './utils/exclusions.js';
+
+/**
+ * @class SmartSources
+ * @extends SmartEntities
+ * @classdesc Manages a collection of SmartSource entities, handling initialization, pruning, importing, and searching of sources.
+ */
+export class SmartSources extends SmartEntities {
+  /**
+   * Creates an instance of SmartSources.
+   * @constructor
+   * @param {Object} env - The environment instance.
+   * @param {Object} [opts={}] - Configuration options.
+   */
+  constructor(env, opts = {}) {
+    super(env, opts);
+    /** @type {number} Counter for search results */
+    this.search_results_ct = 0;
+    /** @type {Array<string>|null} Cached excluded headings */
+    this._excluded_headings = null;
+    /** @type {Array<Function>} */
+    this.env_event_unsubscribers = [];
+    /** @type {Record<string, import('./smart_source.js').SmartSource>} */
+    this.sources_re_import_queue = {};
+    /** @type {ReturnType<typeof setTimeout>|null} */
+    this.sources_re_import_timeout = null;
+    /** @type {boolean} */
+    this.sources_re_import_halted = false;
+    this.import_progress_state = null;
+  }
+
+  /**
+   * Initializes the SmartSources instance by performing an initial scan of sources.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async init() {
+    await super.init();
+    await this.init_items();
+    this.register_env_event_listeners();
+    this.register_source_watchers();
+  }
+
+  /**
+   * Registers env.events listeners for source lifecycle events emitted by filesystem adapters.
+   * @returns {void}
+   */
+  register_env_event_listeners() {
+    this.unregister_env_event_listeners();
+    if (!this.env?.events) return;
+    const listeners = [
+      ['sources:created', (event) => this.handle_source_created(event)],
+      ['sources:modified', (event) => this.handle_source_modified(event)],
+      ['sources:renamed', (event) => this.handle_source_renamed(event)],
+      ['sources:deleted', (event) => this.handle_source_deleted(event)],
+    ];
+    this.env_event_unsubscribers = listeners
+      .map(([event_key, handler]) => this.env.events.on(event_key, handler))
+      .filter(Boolean);
+  }
+
+  /**
+   * Unregisters env.events listeners that were previously attached by this collection.
+   * @returns {void}
+   */
+  unregister_env_event_listeners() {
+    if (!Array.isArray(this.env_event_unsubscribers)) return;
+    while (this.env_event_unsubscribers.length) {
+      const unsub = this.env_event_unsubscribers.pop();
+      try {
+        unsub?.();
+      } catch (error) {
+        console.warn('SmartSources: Failed to unregister env event listener', error);
+      }
+    }
+  }
+
+  /**
+   * Determines whether the incoming event should be handled by this collection instance.
+   * @param {Object} event
+   * @returns {boolean}
+   */
+  should_handle_event(event = {}) {
+    const { collection_key } = event;
+    if (collection_key && collection_key !== this.collection_key) return false;
+    return true;
+  }
+
+  /**
+   * Normalizes event payload keys into a canonical source path.
+   * @param {Object} event
+   * @returns {string|undefined}
+   */
+  get_event_path(event = {}) {
+    return event.item_key || event.path || event.new_path;
+  }
+
+  /**
+   * Handles create events emitted by filesystem adapters.
+   * @param {Object} event
+   * @returns {void}
+   */
+  handle_source_created(event = {}) {
+    if (!this.should_handle_event(event)) return;
+    const key = this.get_event_path(event);
+    if (!key) return;
+    const source = this.init_file_path(key) || this.get(key);
+    if (!source) {
+      // TODO: should emit env.events instead of console warning 
+      console.warn('SmartSources: Unable to initialize source on create event', event);
+      return;
+    }
+    this.queue_source_re_import(source, { event_source: event.event_source });
+  }
+
+  /**
+   * Handles modify events emitted by filesystem adapters.
+   * @param {Object} event
+   * @returns {void}
+   */
+  handle_source_modified(event = {}) {
+    if (!this.should_handle_event(event)) return;
+    const key = this.get_event_path(event);
+    if (!key) return;
+    if (this.fs.is_excluded(key)) return;
+    let source = this.get(key);
+    if (!source) source = this.init_file_path(key);
+    if (!source) {
+      console.warn('SmartSources: Unable to resolve source on modify event', { key, event });
+      return;
+    }
+    this.queue_source_re_import(source, { event_source: event.event_source });
+  }
+
+  /**
+   * Handles rename events emitted by filesystem adapters.
+   * @param {Object} event
+   * @returns {void}
+   */
+  handle_source_renamed(event = {}) {
+    if (!this.should_handle_event(event)) return;
+    const new_key = this.get_event_path(event);
+    const old_key = event.old_path || event.from;
+    if (!new_key && !old_key) return;
+    if (old_key && this.items[old_key]) {
+      const old_source = this.items[old_key];
+      old_source?.delete?.();
+      delete this.items[old_key];
+      if (this.rename_debounce_timeout) clearTimeout(this.rename_debounce_timeout);
+      this.rename_debounce_timeout = setTimeout(() => {
+        this.process_save_queue();
+        this.rename_debounce_timeout = null;
+      }, 1000);
+    }
+    if (!new_key) return;
+    let source = this.get(new_key);
+    if (!source) source = this.init_file_path(new_key);
+    if (!source) {
+      console.warn('SmartSources: Unable to initialize source on rename event', event);
+      return;
+    }
+    this.queue_source_re_import(source, { event_source: event.event_source });
+  }
+
+  /**
+   * Handles delete events emitted by filesystem adapters.
+   * @param {Object} event
+   * @returns {void}
+   */
+  handle_source_deleted(event = {}) {
+    if (!this.should_handle_event(event)) return;
+    const key = this.get_event_path(event);
+    if (!key) return;
+    delete this.items[key];
+    if (this.sources_re_import_queue[key]) {
+      delete this.sources_re_import_queue[key];
+    }
+  }
+
+  /**
+   * Requests filesystem adapters to register source watchers for this collection.
+   * @returns {void}
+   */
+  register_source_watchers() {
+    const adapter = this.fs?.adapter;
+    if (!adapter || typeof adapter.register_source_watchers !== 'function') return;
+    if (this._source_watchers_registered) return;
+    this._source_watchers_registered = adapter.register_source_watchers(this);
+  }
+
+  /**
+   * Queues a SmartSource for re-import and schedules processing.
+   * @param {import('./smart_source.js').SmartSource} source
+   * @param {Object} [event_meta]
+   * @returns {void}
+   */
+  queue_source_re_import(source, event_meta = {}) {
+    if (!source?.key) return;
+    source.data.last_import = { at: 0, hash: null, mtime: 0, size: 0 };
+    this.sources_re_import_queue[source.key] = { source, event_meta };
+    if (this._run_re_import_promise) {
+      this._run_re_import_pending = true;
+      return;
+    }
+    this.debounce_re_import_queue();
+  }
+
+  /**
+   * Debounces re-import processing to respect the configured wait time.
+   * @returns {void}
+   */
+  debounce_re_import_queue() {
+    this.sources_re_import_halted = true;
+    if (this.sources_re_import_timeout) clearTimeout(this.sources_re_import_timeout);
+    const queue_keys = Object.keys(this.sources_re_import_queue || {});
+    if (!queue_keys.length) {
+      this.sources_re_import_timeout = null;
+      return;
+    }
+    const wait_seconds = typeof this.env?.settings?.re_import_wait_time === 'number'
+      ? this.env.settings.re_import_wait_time
+      : 13;
+    this.sources_re_import_timeout = setTimeout(
+      () => this.run_re_import(),
+      wait_seconds * 1000
+    );
+  }
+
+  /**
+   * @returns {object|null}
+   */
+  get_import_progress_state() {
+    return this.import_progress_state ? { ...this.import_progress_state } : null;
+  }
+
+  /**
+   * @param {object|null} next_state
+   * @returns {void}
+   */
+  set_import_progress_state(next_state = null) {
+    this.import_progress_state = next_state
+      ? {
+          ...next_state,
+          updated_at: Date.now(),
+        }
+      : null
+    ;
+  }
+
+  /**
+   * Processes the queued re-import tasks.
+   * @returns {Promise<void>}
+   */
+  async run_re_import() {
+    if (this._run_re_import_promise) {
+      this._run_re_import_pending = true;
+      return this._run_re_import_promise;
+    }
+
+    this._run_re_import_promise = Promise.resolve().then(async () => {
+      try {
+        do {
+          this._run_re_import_pending = false;
+          await SmartSources.prototype.run_re_import_once.call(this);
+        } while (this._run_re_import_pending);
+      } finally {
+        this._run_re_import_promise = null;
+        this._run_re_import_pending = false;
+      }
+    });
+
+    return this._run_re_import_promise;
+  }
+
+  /**
+   * Processes one targeted re-import queue snapshot.
+   * @returns {Promise<void>}
+   */
+  async run_re_import_once() {
+    this.sources_re_import_halted = false;
+    const queue_entries = Object.entries(this.sources_re_import_queue || {});
+    if (!queue_entries.length) {
+      if (this.sources_re_import_timeout) clearTimeout(this.sources_re_import_timeout);
+      this.sources_re_import_timeout = null;
+      this.set_import_progress_state(null);
+      return;
+    }
+
+    this.set_import_progress_state({
+      active: true,
+      stage: 'reimporting',
+      progress: 0,
+      total: queue_entries.length,
+    });
+    this.emit_event('sources:reimport_started', {
+      progress: 0,
+      total: queue_entries.length,
+      event_source: 'run_re_import',
+    });
+
+    const re_import_embed_queue = [];
+    let completed_count = 0;
+    for (let index = 0; index < queue_entries.length; index += 100) {
+      const batch = queue_entries.slice(index, index + 100);
+      await Promise.all(batch.map(([, { source }]) => source.import()));
+
+      for (const [key, queue_entry] of batch) {
+        const { source } = queue_entry;
+        if (source.should_embed) re_import_embed_queue.push(source);
+        if (this.block_collection?.settings?.embed_blocks) {
+          for (const block of source.blocks || []) {
+            if (!block.should_embed) {
+              block._queue_embed = false;
+              continue;
+            }
+
+            if (block._queue_embed || block.is_unembedded) {
+              re_import_embed_queue.push(block);
+              block._queue_embed = true;
+            }
+          }
+        }
+        if (this.sources_re_import_queue[key] === queue_entry) {
+          delete this.sources_re_import_queue[key];
+        }
+      }
+
+      completed_count += batch.length;
+      this.set_import_progress_state({
+        active: true,
+        stage: 'reimporting',
+        progress: completed_count,
+        total: queue_entries.length,
+      });
+      this.emit_event('sources:reimport_progress', {
+        progress: completed_count,
+        total: queue_entries.length,
+        event_source: 'run_re_import',
+      });
+
+      if (this.sources_re_import_halted) {
+        this.debounce_re_import_queue();
+        break;
+      }
+    }
+
+    this.set_import_progress_state(null);
+
+    this.build_links_map();
+    await this.process_save_queue();
+    await this.block_collection?.process_save_queue();
+
+    if (re_import_embed_queue.length) {
+      this._embed_queue = re_import_embed_queue;
+      this._embed_queue_ready = true;
+      const embed_start_at = Date.now();
+      try {
+        await this.process_embed_queue();
+      } finally {
+        this.mark_embed_queue_dirty?.();
+      }
+      console.log(`Processed embed queue in ${Date.now() - embed_start_at}ms`);
+    }
+
+    if (!this.sources_re_import_halted) {
+      this.emit_event('sources:reimport_completed', {
+        count: completed_count,
+        total: queue_entries.length,
+        event_source: 'run_re_import',
+      });
+    }
+
+    if (this.sources_re_import_timeout) clearTimeout(this.sources_re_import_timeout);
+    this.sources_re_import_timeout = null;
+  }
+
+  /**
+   * Initializes items by letting each adapter do any necessary file-based scanning.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async init_items() {
+    this.emit_event('source:initial_scan_started', {
+      event_source: 'init_items',
+    });
+    for (const AdapterClass of Object.values(this.source_adapters)) {
+      if (typeof AdapterClass.init_items === 'function') {
+        await AdapterClass.init_items(this);
+      }
+    }
+    this.emit_event('source:initial_scan_completed', {
+      event_source: 'init_items',
+    });
+  }
+
+  /**
+   * Creates (or returns existing) a SmartSource for a given file path, if the extension is recognized.
+   * @param {string} file_path - The path to the file or pseudo-file
+   * @returns {SmartSource|undefined} The newly created or existing SmartSource, or undefined if no recognized extension
+   */
+  init_file_path(file_path) {
+    const ext = this.get_extension_for_path(file_path);
+    if (!ext) return; // skip if no extension
+    if (this.fs.is_excluded(file_path)) {
+      console.warn(`File ${file_path} is excluded from processing.`);
+      return;
+    }
+    if (!this.fs.files[file_path]) {
+      this.fs.include_file(file_path); // Ensure file is included in the fs
+    }
+    // If item already exists, return it
+    if (this.items[file_path]) return this.items[file_path];
+
+    // create new item
+    const item = new this.item_type(this.env, { path: file_path });
+    // if no adapter for this source type, skip adding it to collection
+    if (!item.source_adapter) return;
+
+    this.items[file_path] = item;
+    item.queue_import();
+    item.queue_load();
+    return item;
+  }
+
+  /**
+   * Looks for an extension in descending order:
+   * e.g. split "my.file.name.github" -> ["my","file","name","github"]
+   * Try 'file.name.github', 'name.github', 'github'
+   * Return the first that is in 'source_adapters'
+   * @param {string} file_path
+   * @returns {string|undefined} recognized extension, or undefined if none
+   */
+  get_extension_for_path(file_path) {
+    if (!file_path) return undefined;
+    const pcs = file_path.split('.');
+    // if there's no dot, or only one piece, we have no extension
+    if (pcs.length < 2) return undefined;
+    // shift off the first portion so we only look at possible extension combos
+    let last_ext;
+    pcs.shift(); // remove the first piece (like a base name)
+    while (pcs.length) {
+      const supported_ext = pcs.join('.').toLowerCase();
+      if (this.source_adapters[supported_ext]) {
+        return supported_ext; // handle multi-part extensions known by source adapters
+      }
+      last_ext = pcs.shift();
+    }
+    return last_ext;
+  }
+
+  /**
+   * Builds a map of links between sources.
+   * @returns {Object} An object mapping link paths to source keys.
+   */
+  build_links_map() {
+    const start_time = Date.now();
+    this.links = {};
+    for (const source of Object.values(this.items)) {
+      for (const link of source.outlinks) {
+        if (!this.links[link.key]) this.links[link.key] = {};
+        this.links[link.key][source.key] = { ...link };
+      }
+    }
+    const end_time = Date.now();
+    console.log(`Time spent building links: ${end_time - start_time}ms`);
+    return this.links;
+  }
+
+  /**
+   * Updates one source's contribution to the links map.
+   * @param {import('./smart_source.js').SmartSource} source
+   * @param {Array<import('smart-types').LinkObject>} previous_outlinks
+   * @returns {Object} The updated links map.
+   */
+  update_links_map(source, previous_outlinks) {
+    if (!this.links) this.links = {};
+    for (const link of previous_outlinks) {
+      const inlinks = this.links[link.key];
+      if (!inlinks) continue;
+      delete inlinks[source.key];
+      if (!Object.keys(inlinks).length) delete this.links[link.key];
+    }
+    for (const link of source.outlinks) {
+      if (!this.links[link.key]) this.links[link.key] = {};
+      this.links[link.key][source.key] = { ...link };
+    }
+    return this.links;
+  }
+
+  /**
+   * Creates a new source with the given key and content.
+   * @async
+   * @param {string} key - The key (path) of the new source.
+   * @param {string} content - The content to write to the new source.
+   * @returns {Promise<SmartSource>} The created SmartSource instance.
+   */
+  async create(key, content) {
+    await this.fs.write(key, content);
+    await this.fs.refresh();
+    const source = await this.create_or_update({ path: key });
+    await source.import();
+    return source;
+  }
+
+  /**
+   * Performs a lexical search for matching SmartSource content.
+   * @async
+   * @deprecated uses this.actions 2025-12-02
+   * @param {Object} search_filter - The filter criteria for the search.
+   * @param {string[]} search_filter.keywords - An array of keywords to search for.
+   * @param {number} [search_filter.limit] - The maximum number of results to return.
+   * @returns {Promise<Array<SmartSource>>} A promise that resolves to an array of matching SmartSource entities.
+   */
+  async search(search_filter = {}) {
+    const {
+      keywords,
+      limit,
+      ...filter_opts
+    } = search_filter;
+    if (!keywords) {
+      console.warn("search_filter.keywords not set");
+      return [];
+    }
+    this.search_results_ct = 0;
+    const initial_results = this.filter(filter_opts);
+    const search_results = [];
+    for (let index = 0; index < initial_results.length; index += 10) {
+      const batch = initial_results.slice(index, index + 10);
+      const batch_results = await Promise.all(
+        batch.map(async (item) => {
+          try {
+            const matches = await item.search(search_filter);
+            if (matches) {
+              this.search_results_ct++;
+              return { item, score: matches };
+            }
+            return null;
+          } catch (error) {
+            console.error(`Error searching item ${item.id || 'unknown'}:`, error);
+            return null;
+          }
+        })
+      );
+      search_results.push(...batch_results.filter(Boolean));
+    }
+    return search_results
+      .sort((a, b) => b.score - a.score)
+      .map((result) => result.item)
+    ;
+  }
+
+  /**
+   * Looks up entities based on the provided parameters.
+   * @async
+   * @deprecated uses this.actions 2025-12-02
+   * @param {Object} [params={}] - Parameters for the lookup.
+   * @param {Object} [params.filter] - Filter options.
+   * @param {number} [params.k] - Deprecated. Use `params.filter.limit` instead.
+   * @returns {Promise<Array<SmartSource>>} A promise that resolves to an array of matching SmartSource entities.
+   */
+  async lookup(params = {}) {
+    const limit = params.filter?.limit
+      || params.k // DEPRECATED: for backwards compatibility (likely safe to remove 2026-03-16)
+      || this.env.settings.lookup_k
+      || 10
+    ;
+    if (params.filter?.limit) delete params.filter.limit; // Remove to prevent limiting in initial filter (limit should happen after nearest for lookup)
+    if (params.collection) {
+      const collection = this.env[params.collection];
+      if (collection && collection.lookup) {
+        delete params.collection; // Remove to prevent passing collection name to lookup
+        params.skip_blocks = true; // Skip blocks in this lookup
+        const results = await collection.lookup(params);
+        if (results.error) {
+          console.warn(results.error);
+          return [];
+        }
+        return results.slice(0, limit);
+      }
+    }
+    let results = await super.lookup(params);
+    if (results.error) {
+      console.warn(results.error);
+      return [];
+    }
+    if (this.block_collection?.settings?.embed_blocks && !params.skip_blocks) {
+      results = [
+        ...results,
+        ...(await this.block_collection.lookup(params)),
+      ].sort(sort_by_score);
+    }
+    return results.slice(0, limit);
+  }
+
+  /**
+   * Processes the load queue by loading items and optionally importing them.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async process_load_queue() {
+    await super.process_load_queue();
+    if (this.collection_key === 'smart_sources' && this.env.smart_blocks) { // Excludes sub-classes
+      Object.values(this.env.smart_blocks.items).forEach((item) => item.init()); // sets queue_embed if no vec
+    }
+    if (this.block_collection) {
+      this.block_collection.loaded = Object.keys(this.block_collection.items).length;
+    }
+    if (!this.opts.prevent_import_on_load) {
+      await this.process_source_import_queue(this.opts); // this.opts passes process_embed_queue if present
+    }
+    this.build_links_map();
+    this.block_collection.cleanup_blocks(); // ensure expired blocks are removed after load
+  }
+
+  /**
+   * @method process_source_import_queue
+   * @description
+   * Imports items (SmartSources or SmartBlocks) that have been flagged for import.
+   */
+  async process_source_import_queue(opts = {}) {
+    const { process_embed_queue = true, force = false } = opts;
+    if (force) Object.values(this.items).forEach((item) => item._queue_import = true);
+    const import_queue = Object.values(this.items).filter((item) => item._queue_import);
+    console.log("import_queue " + import_queue.length);
+
+    if (!import_queue.length) {
+      this.set_import_progress_state(null);
+      this.emit_event('sources:import_queue_empty', {
+        event_source: 'process_source_import_queue',
+      });
+      return;
+    }
+
+    const time_start = Date.now();
+    this.set_import_progress_state({
+      active: true,
+      stage: 'importing',
+      progress: 0,
+      total: import_queue.length,
+    });
+    this.emit_event('sources:import_started', {
+      progress: 0,
+      total: import_queue.length,
+      event_source: 'process_source_import_queue',
+    });
+
+    for (let index = 0; index < import_queue.length; index += 100) {
+      const batch = import_queue.slice(index, index + 100);
+      await Promise.all(batch.map((item) => item.import()));
+      const progress = Math.min(import_queue.length, index + batch.length);
+      this.set_import_progress_state({
+        active: true,
+        stage: 'importing',
+        progress,
+        total: import_queue.length,
+      });
+      this.emit_event('sources:import_progress', {
+        progress,
+        total: import_queue.length,
+        event_source: 'process_source_import_queue',
+      });
+    }
+
+    this.set_import_progress_state(null);
+
+    this.build_links_map();
+    if (process_embed_queue) await this.process_embed_queue();
+    else console.log("skipping process_embed_queue");
+    await this.process_save_queue();
+    await this.block_collection?.process_save_queue();
+    this.emit_event('sources:import_completed', {
+      count: import_queue.length,
+      time_in_seconds: (Date.now() - time_start) / 1000,
+      event_source: 'process_source_import_queue',
+    });
+  }
+
+  /**
+   * Retrieves the source adapters based on the collection configuration.
+   * @readonly
+   * @returns {Object} An object mapping file extensions to adapter constructors.
+   */
+  get source_adapters() {
+    if (!this._source_adapters) {
+      const source_adapters = Object.entries(this.env.opts.collections?.[this.collection_key]?.source_adapters || {});
+      const _source_adapters = source_adapters.reduce((acc, [key, Adapter]) => {
+        if (Adapter.extensions) Adapter.extensions?.forEach((ext) => acc[ext] = Adapter);
+        else if (typeof Adapter.detect_type === 'function') acc[key] = Adapter;
+        return acc;
+      }, {});
+      if (Object.keys(_source_adapters).length) {
+        this._source_adapters = _source_adapters;
+      }
+    }
+    return this._source_adapters;
+  }
+
+  /**
+   * Retrieves the notices system from the environment.
+   * @readonly
+   * @returns {Object} The notices object.
+   */
+  get notices() { return this.env.smart_connections_plugin?.notices || this.env.main?.notices; }
+
+  /**
+   * Retrieves the currently active note.
+   * @readonly
+   * @returns {SmartSource|null} The current SmartSource instance or null if none.
+   */
+  get current_note() { return this.get(this.env.smart_connections_plugin.app.workspace.getActiveFile().path); }
+
+  /**
+   * Retrieves the file system instance, initializing it if necessary.
+   * @readonly
+   * @returns {SmartFS} The file system instance.
+   */
+  get fs() {
+    if (!this._fs) {
+      this._fs = new this.env.opts.modules.smart_fs.class(this.env, {
+        adapter: this.env.opts.modules.smart_fs.adapter,
+        fs_path: this.env.opts.env_path || '',
+        exclude_patterns: this.excluded_patterns || [],
+      });
+    }
+    return this._fs;
+  }
+
+  /**
+   * Retrieves the settings configuration by combining superclass settings and adapter-specific settings.
+   * @readonly
+   * @returns {Object} The settings configuration object.
+   */
+  get settings_config() {
+    const _settings_config = {
+      ...super.settings_config,
+      ...this.process_settings_config(settings_config),
+      ...Object.entries(this.source_adapters).reduce((acc, [file_extension, adapter_constructor]) => {
+        if (acc[adapter_constructor]) return acc; // Skip if already added same adapter_constructor
+        const item = this.items[Object.keys(this.items).find((key) => key.endsWith(file_extension))];
+        const adapter_instance = new adapter_constructor(item || new this.item_type(this.env, {}));
+        if (adapter_instance.settings_config) {
+          acc[adapter_constructor.name] = {
+            type: "html",
+            value: `<h4>${adapter_constructor.name} adapter</h4>`
+          };
+          acc = { ...acc, ...adapter_instance.settings_config };
+        }
+        return acc;
+      }, {}),
+    };
+    return _settings_config;
+  }
+
+  /**
+   * Retrieves the block collection associated with SmartSources.
+   * @readonly
+   * @returns {SmartBlocks} The block collection instance.
+   */
+  get block_collection() { return this.env.smart_blocks; }
+
+  /**
+   * Retrieves the embed queue containing items and their blocks to be embedded.
+   * @readonly
+   * @returns {Array<Object>} The embed queue.
+   */
+  get embed_queue() {
+    if (!this._embed_queue.length) {
+      try {
+        const embed_blocks = this.block_collection.settings.embed_blocks;
+        this._embed_queue = Object.values(this.items).reduce((acc, item) => {
+          if (item._queue_embed || (item.should_embed && item.is_unembedded)) acc.push(item);
+          if (embed_blocks) item.blocks.forEach((block) => {
+            if (block._queue_embed || (block.should_embed && block.is_unembedded)) acc.push(block);
+          });
+          return acc;
+        }, []);
+      } catch (error) {
+        console.error(`Error getting embed queue:`, error);
+      }
+    }
+    return this._embed_queue;
+  }
+
+  /**
+   * Clears all data by removing sources and blocks, reinitializing the file system, and reimporting items.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async run_clear_all() {
+    this.emit_event('sources:clear_started', {
+      event_source: 'run_clear_all',
+    });
+    await this.data_adapter.clear_all();
+    this.clear();
+    this.block_collection.clear();
+    this._fs = null;
+
+    await this.init_fs();
+
+    await this.init_items();
+    this._excluded_headings = null;
+
+    Object.values(this.items).forEach((item) => {
+      item.queue_import();
+      item.queue_embed();
+      item.loaded_at = Date.now() + 9999999999;
+    });
+
+    this.emit_event('sources:clear_completed', {
+      event_source: 'run_clear_all',
+    });
+    await this.process_source_import_queue();
+  }
+
+  async init_fs(opts = {}) {
+    const { force_refresh = false } = opts;
+    if (force_refresh) await this.env.fs.refresh();
+    await this.fs.load_exclusions();
+    // prevent re-scanning all files (already done at env-level fs.init)
+    this.fs.file_paths = this.fs.post_process(this.env.fs.file_paths);
+    this.fs.files = this.fs.file_paths.reduce((acc, file_path) => {
+      acc[file_path] = this.env.fs.files[file_path];
+      return acc;
+    }, {});
+    this.fs.folder_paths = this.fs.post_process(this.env.fs.folder_paths);
+    this.fs.folders = this.fs.folder_paths.reduce((acc, folder_path) => {
+      acc[folder_path] = this.env.fs.folders[folder_path];
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Retrieves patterns for excluding files/folders from processing.
+   * @readonly
+   * @returns {Array<string>}
+   */
+  get excluded_patterns() {
+    return [
+      ...(this.file_exclusions?.map((file) => `${file}**`) || []),
+      ...(this.folder_exclusions || []).flatMap((folder) => {
+        // DEPRECATED: exlusion builder should handle adding glob patterns (2026-06-18 including here for backward compatibility)
+        const pattern = folder.endsWith('/**')
+          ? folder
+          : folder.endsWith('/')
+            ? `${folder}**`
+            : `${folder}/**`
+        ;
+        return [pattern];
+      }),
+      this.env.env_data_dir + "/**",
+    ];
+  }
+
+  /**
+   * Retrieves file exclusions from the array-backed list when present,
+   * falling back to the legacy CSV setting.
+   * @readonly
+   * @returns {Array<string>} An array of file exclusion patterns.
+   */
+  get file_exclusions() {
+    const settings = this.env.settings?.smart_sources || {};
+    return normalize_exclusion_list(
+      settings.file_exclusions_list ?? settings.file_exclusions,
+    );
+  }
+
+  /**
+   * Retrieves folder exclusions from the array-backed list when present,
+   * falling back to the legacy CSV setting.
+   * @readonly
+   * @returns {Array<string>} An array of folder exclusion patterns.
+   */
+  get folder_exclusions() {
+    const settings = this.env.settings?.smart_sources || {};
+    return normalize_exclusion_list(
+      settings.folder_exclusions_list ?? settings.folder_exclusions,
+    ).map((folder) => {
+      if (folder.includes('*')) return folder;
+      if (!folder.endsWith("/")) return folder + "/";
+      return folder;
+    });
+  }
+
+  /**
+   * Retrieves the excluded headings from settings.
+   * @readonly
+   * @returns {Array<string>} An array of excluded headings.
+   */
+  get excluded_headings() {
+    if (!this._excluded_headings) {
+      const csv = this.env.settings?.smart_sources?.excluded_headings;
+      this._excluded_headings = csv?.length ? csv.split(",").map((heading) => heading.trim()) : [];
+    }
+    return this._excluded_headings;
+  }
+
+  /**
+   * Retrieves the count of included files that are not excluded.
+   * @readonly
+   * @returns {number} The number of included files.
+   */
+  get included_files() {
+    const extensions = Object.keys(this.source_adapters);
+    return this.fs.file_paths
+      .filter((file_path) => extensions.some((ext) => file_path.endsWith(ext)) && !this.fs.is_excluded(file_path))
+      .length;
+  }
+
+  get excluded_file_paths() {
+    return this.env.fs.file_paths // use env-level fs (contains all files)
+      .filter((file_path) => this.fs.is_excluded(file_path));
+  }
+
+  /**
+   * Retrieves the total number of files, regardless of exclusion.
+   * @readonly
+   * @returns {number} The total number of files.
+   */
+  get total_files() {
+    return this.fs.file_paths
+      .filter((file) => file.endsWith(".md") || file.endsWith(".canvas"))
+      .length;
+  }
+
+  /**
+   * Unloads the collection and clears registered listeners and timers.
+   * @returns {void}
+   */
+  unload() {
+    this.unregister_env_event_listeners();
+    if (this.sources_re_import_timeout) clearTimeout(this.sources_re_import_timeout);
+    this.sources_re_import_timeout = null;
+    this.sources_re_import_queue = {};
+    this.set_import_progress_state(null);
+    super.unload();
+  }
+
+  get data_dir() { return 'multi'; }
+}
+
+export const settings_config = {
+};

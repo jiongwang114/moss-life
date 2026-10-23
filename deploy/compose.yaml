@@ -1,0 +1,33 @@
+services:
+  moss:
+    image: moss-note:referrals-0.3.4-20261023
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: moss-recording
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MOSS_SEARCH_ENABLED: "1"
+      MOSS_SEARCH_PROFILE: bge-zh
+      MOSS_SEARCH_INCLUDE_TAGS: "1"
+      MOSS_SEARCH_SCOPE: category
+      MOSS_SEARCH_THREADS: "1"
+    mem_limit: 512m
+    cpus: 1
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    volumes:
+      - moss-data:/data
+    ports:
+      - "127.0.0.1:8001:8000"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  moss-data:
