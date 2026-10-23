@@ -53,3 +53,6 @@ backend/data/
 /交付/
 /real-api-verification.png
 /手机端可用落地执行/android-icon-build*/
+
+!/README.md
+/.resume-work/
