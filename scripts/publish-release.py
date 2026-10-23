@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import tempfile
 import zipfile
@@ -54,6 +55,11 @@ def validate_apk(apk, name, code):
     return hashlib.sha256(apk.read_bytes()).hexdigest()
 
 
+def asset_name(name):
+    # GitHub normalizes non-ASCII asset names; use a stable portable filename.
+    return f'MOSS-{name}-android.apk'
+
+
 def notes(name, apk, digest):
     source = (ROOT / 'moss-prototype/release.js').read_text(encoding='utf-8')
     entries = re.findall(r"^\s*'([^'\n]+)'[,]?\s*$", source, re.M)
@@ -66,7 +72,7 @@ def notes(name, apk, digest):
         '- 客户端连接 MOSS 提供的服务，无需自行部署或配置 AI 密钥。',
         '- 安装包已完成本地构建及签名检查；发布不代表所有设备均已通过真机验收。',
         '- 网页版：https://note.jiongplay.cn', '',
-        f'安装包：`{apk.name}`', f'SHA-256：`{digest}`', '',
+        f'安装包：`{asset_name(name)}`', f'SHA-256：`{digest}`', '',
     ])
 
 
@@ -80,7 +86,8 @@ def api(path, optional=False):
 
 
 def check_asset(release, apk, digest):
-    assets = [item for item in release['assets'] if item['name'] == apk.name]
+    name = version()[0]
+    assets = [item for item in release['assets'] if item['name'] == asset_name(name)]
     if len(assets) != 1:
         raise RuntimeError('Uploaded APK is missing or duplicated')
     asset = assets[0]
@@ -115,7 +122,9 @@ def main():
         if target['type'] == 'tag':
             target = api(f'repos/{REPO}/git/tags/{target["sha"]}')['object']
         if target['sha'] != head:
-            raise RuntimeError('This version is already tied to another commit; increment the version')
+            # Documentation/publisher fixes need no new APK. App source changes do.
+            run(['git', 'diff', '--exit-code', target['sha'], head, '--',
+                 'backend', 'moss-prototype', 'smart-search', str(ANDROID.relative_to(ROOT))])
         if release['draft'] or release['prerelease']:
             raise RuntimeError('An unfinished release exists; inspect it before retrying')
         check_asset(release, apk, digest)
@@ -124,8 +133,10 @@ def main():
     with tempfile.TemporaryDirectory(prefix='moss-release-') as temp:
         note_file = Path(temp) / 'notes.md'
         note_file.write_text(body, encoding='utf-8')
+        upload = Path(temp) / asset_name(name)
+        shutil.copyfile(apk, upload)
         # gh uploads assets to a draft before publishing the completed release.
-        run(['gh', 'release', 'create', tag, apk, '--repo', REPO, '--target', head,
+        run(['gh', 'release', 'create', tag, upload, '--repo', REPO, '--target', head,
              '--title', f'MOSS {name}', '--notes-file', note_file])
     release = api(f'repos/{REPO}/releases/tags/{tag}')
     check_asset(release, apk, digest)
