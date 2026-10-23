@@ -36,9 +36,9 @@ PRODUCT_SHOWCASE_END -->
 
 适配目标为 Android 8.0 及以上。下载 MOSS 安装包，在手机上打开并按照系统提示完成安装，然后启动应用。
 
-**[下载 Android 最新版](https://github.com/jiongwang114/moss-life/releases/latest)** · [查看历史版本](https://github.com/jiongwang114/moss-life/releases)
+**[下载 Android 最新版](https://note.jiongplay.cn/api/v1/app-updates/android/packages/17)** · [查看历史版本](https://github.com/jiongwang114/moss-life/releases)
 
-进入发布页后，在 **Assets（下载附件）** 中选择 `.apk` 文件下载。
+点击最新版链接即可下载 APK；GitHub 历史发布页的 **Assets（下载附件）** 中保留旧版安装包。
 
 ### 网页版
 
@@ -58,7 +58,9 @@ PRODUCT_SHOWCASE_END -->
 
 ## 当前状态与数据说明
 
-项目仍在持续迭代，当前仓库源码版本为 **0.3.5**。Android 安装包按版本发布在 Releases 中，旧版保留供查阅；不同手机及厂商 WebView 的实际兼容性仍需真机验证。
+项目仍在持续迭代，当前仓库源码版本为 **0.3.7**。当前 Android 安装包由 MOSS 下载服务提供，GitHub 历史版保留供查阅；不同手机及厂商 WebView 的实际兼容性仍需真机验证。
+
+安卓 0.3.6 起支持启动检查和“账号与设置 → 检查更新”。运营方发布版本信息后，App 才会提示；同意后下载，由安卓系统确认安装。0.3.5 及更早的版本需先手动覆盖安装一次，才能获得检查更新功能。0.3.7 的版本接口及安装包已部署，并通过连接正式 HTTPS 服务的真机检查。
 
 - **数据保存**：账号和已发送的记录保存在服务器中，手机或浏览器还会保存草稿、会话及待发送内容。记录并非仅存储在手机上。
 - **AI 处理**：启用在线 AI 时，处理所需的记录正文会发送至服务端配置的 AI 服务，用于整理正文、生成标题和匹配标签；具体提供方及数据处理政策以实际服务配置和说明为准。

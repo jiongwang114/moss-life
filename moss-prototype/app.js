@@ -175,6 +175,13 @@ function handleSystemBack(){
  return false;
 }
 window.mossHandleBack=handleSystemBack;
+window.mossPrepareAppUpdate=async()=>{
+ if(!M.real||!M.ready)throw Error('页面尚未就绪，请稍后重试。');
+ if(state.busy.size||state.export&&!['succeeded','failed','cancelled','handed_off'].includes(state.export.state))throw Error('请先完成或取消当前操作和导出，再安装更新。');
+ if(state.revise||state.edit||Object.values(state.editDrafts).some(v=>v?.trim()))throw Error('请先保存或取消当前编辑，再安装更新。');
+ MossAccounts.prepareAppUpdate();
+ if(state.auth)await M.transaction('draft',state.draft);
+};
 
 MossAccounts.bind({state,render,toast,sync,startExport});
 M.subscribe(sync);render();M.init().then(async()=>{

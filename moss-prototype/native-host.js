@@ -27,5 +27,9 @@ window.MossNative = (() => {
     for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
     return call('saveExport', {name, base64: btoa(binary)});
   }
+  // Check only once after the page's durable local state has been restored.
+  window.addEventListener('moss-boot-ready', () => {
+    call('checkAppUpdate', {manual:false}).catch(() => {});
+  }, {once:true});
   return {call, saveExport};
 })();

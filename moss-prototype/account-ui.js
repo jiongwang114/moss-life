@@ -19,7 +19,7 @@ window.MossAccounts=(()=>{
   function page(){
     const u=Moss.user,back=`<button class="clear settings-back" data-account="${section==='home'?'close':'home'}">‹ ${section==='home'?(returnPage==='records'?'返回看记录':'返回写记录'):'账号与设置'}</button>`,head=`<section class="settings-page account-form">${back}`;
     if(!Moss.real)return head+'<h2>账号与设置</h2><p>当前为独立模拟模式；账号操作请使用真实服务。</p></section>';
-    if(section==='home')return head+`<div class="eyebrow">YOUR ACCOUNT</div><h2>账号与设置</h2><div class="account-summary"><b>${esc(u?.nickname||'我的账号')}</b><small>登录账号：${esc(u?.username||'正在读取…')}</small></div><div class="settings-group">${row('nickname','修改昵称')}${row('password','修改密码')}${row('referral','我的推荐码','邀请一位朋友加入 MOSS')}${row('export','导出我的记录','导出已完成记录，保存为 ZIP 文件')}</div><div class="settings-group">${row('privacy','数据与隐私说明')}${row('about','关于 MOSS')}</div><div class="settings-group">${row('switch','切换账号')}${row('logout','退出当前账号')}${row('logout-all','退出所有设备')}</div><div class="settings-group">${row('delete','注销账号','删除账号及相关数据，不提供恢复',true)}</div>${notices()}</section>`;
+    if(section==='home')return head+`<div class="eyebrow">YOUR ACCOUNT</div><h2>账号与设置</h2><div class="account-summary"><b>${esc(u?.nickname||'我的账号')}</b><small>登录账号：${esc(u?.username||'正在读取…')}</small></div><div class="settings-group">${row('nickname','修改昵称')}${row('password','修改密码')}${row('referral','我的推荐码','邀请一位朋友加入 MOSS')}${row('export','导出我的记录','导出已完成记录，保存为 ZIP 文件')}</div><div class="settings-group">${row('privacy','数据与隐私说明')}${window.MossNative?row('check-update','检查更新','下载新版并由系统确认安装'):''}${row('about','关于 MOSS')}</div><div class="settings-group">${row('switch','切换账号')}${row('logout','退出当前账号')}${row('logout-all','退出所有设备')}</div><div class="settings-group">${row('delete','注销账号','删除账号及相关数据，不提供恢复',true)}</div>${notices()}</section>`;
     if(section==='referral'){
       const r=referralData,active=r?.status==='active';
       return head+`<h2>我的推荐码</h2><p>每次只能有一个有效推荐码，从生成时起 7 天内有效，仅供一人注册成功后失效。使用或过期后，可以重新生成。</p>${r?`<p role="status">${{not_generated:'还没有生成推荐码。',active:'推荐码可用，请仅分享给你想邀请的朋友。',used:'上一个推荐码已使用，可以重新生成。',expired:'上一个推荐码已过期，可以重新生成。'}[r.status]||'请刷新推荐码状态。'}</p>${active?`<label for="referral-code">推荐码（注册页填写“邀请码”）</label><textarea class="referral-code" id="referral-code" readonly rows="2" spellcheck="false">${esc(r.code)}</textarea><p>到期时间：${esc(new Date(r.expires_at).toLocaleString())}</p><button class="btn primary" data-account="referral-copy" ${busy?'disabled':''}>复制推荐码</button>`:`<button class="btn primary" data-account="referral-generate" ${busy?'disabled':''}>${busy?'正在处理…':r.status==='not_generated'?'生成推荐码':'重新生成推荐码'}</button>`}`:busy?'<p role="status">正在读取推荐码…</p>':''}<button class="btn ghost" data-account="referral-refresh" ${busy?'disabled':''}>刷新状态</button>${notices()}</section>`;
@@ -54,6 +54,10 @@ window.MossAccounts=(()=>{
   }
   async function action(name){
     if(busy)return;
+    if(name==='check-update'){
+      if(window.MossNative)await MossNative.call('checkAppUpdate',{manual:true});
+      return;
+    }
     if(name==='close'){back();return}
     if(name==='auth-toggle'){authMode=authMode==='login'?'register':'login';clearForms();ctx.state.authError='';render();return}
     if(name==='home'){back();return}
@@ -91,10 +95,13 @@ window.MossAccounts=(()=>{
       }
     }catch(e){error=message(e)}finally{busy=false;render()}
   }
+  function prepareAppUpdate(){
+    if(busy||Object.values(form).some(v=>typeof v==='string'?v.length>0:!!v))throw Error('请先完成或退出当前账号表单，再安装更新。');
+  }
   document.addEventListener('input',e=>{if(e.target.closest('.account-form'))form[e.target.id]=e.target.type==='checkbox'?e.target.checked:e.target.value});
   document.addEventListener('submit',e=>{if(e.target.id.startsWith('account-')){e.preventDefault();e.stopImmediatePropagation();handleForm(e.target.id)}});
   document.addEventListener('click',e=>{const b=e.target.closest('[data-account]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();action(b.dataset.account).catch(e=>{error=message(e);render()})});
   window.addEventListener('moss-account-cleared',()=>{if(ctx){resetUI();render()}});
   window.addEventListener('moss-account-ready',e=>{ctx.state.draft=e.detail.draft;render()});
-  return {bind:value=>ctx=value,open,page,login,resetUI,back};
+  return {bind:value=>ctx=value,open,page,login,resetUI,back,prepareAppUpdate};
 })();

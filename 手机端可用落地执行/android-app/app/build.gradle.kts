@@ -20,8 +20,8 @@ android {
         applicationId = "com.moss.mobile"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "0.3.5"
+        versionCode = 17
+        versionName = "0.3.7"
         testInstrumentationRunner = "com.moss.mobile.WebViewVerification"
 
         buildConfigField("String", "API_BASE_URL", "\"https://note.jiongplay.cn/api/v1\"")

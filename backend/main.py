@@ -17,6 +17,7 @@ from .domain import *
 from .auth import password_hash,verify,session,token_hash,authenticate
 from .auth import active_user,public_user
 from . import accounts
+from .app_updates import latest_android_release, package_file
 from .providers import Provider
 from .services.pipeline import Pipeline
 from .services.exporter import run_export,release_export,invalidate_user_exports,cleanup_released_exports
@@ -119,6 +120,15 @@ app.add_middleware(SecurityMiddleware)
 async def health():
     await tx(lambda c:c.execute('SELECT 1').fetchone())
     return {'status':'ok'}
+
+@app.get('/api/v1/app-updates/android')
+async def android_update():
+    return await asyncio.to_thread(latest_android_release)
+
+@app.get('/api/v1/app-updates/android/packages/{version_code}')
+async def android_package(version_code:int):
+    path = await asyncio.to_thread(package_file, version_code)
+    return FileResponse(path, media_type='application/vnd.android.package-archive', filename=f'MOSS-{version_code}-android.apk')
 
 @app.exception_handler(Problem)
 async def problem_handler(request,e):

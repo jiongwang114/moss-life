@@ -1,6 +1,6 @@
 services:
   moss:
-    image: moss-note:referrals-0.3.4-20261023
+    image: moss-note:updates-0.3.7-20261023
     build:
       context: ..
       dockerfile: deploy/Dockerfile

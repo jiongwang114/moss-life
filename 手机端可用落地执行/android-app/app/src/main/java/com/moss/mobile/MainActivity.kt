@@ -29,8 +29,10 @@ import androidx.webkit.WebMessageCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 import org.json.JSONArray
 import java.io.File
@@ -47,6 +49,8 @@ class MainActivity : ComponentActivity() {
     private var trustedOrigin = "https://note.jiongplay.cn"
     private var handlingBack = false
     private var legacyPort: WebMessagePort? = null
+    private lateinit var updater: AppUpdater
+    private var updatePreparation: Pair<String, CompletableDeferred<Unit>>? = null
     private val saveDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
         val reply = saveReply
         val file = saveFile
@@ -77,6 +81,7 @@ class MainActivity : ComponentActivity() {
         // Only instrumented debug tests may override the origin/database; release always uses HTTPS.
         val verification = BuildConfig.DEBUG && intent.getBooleanExtra("moss.verification", false)
         if (verification) trustedOrigin = "http://127.0.0.1:8766"
+        updater = AppUpdater(this, trustedOrigin) { prepareAppUpdate() }
         database = Room.databaseBuilder(applicationContext, MossDatabase::class.java,
             if (verification) "moss-verification.db" else "moss-mobile.db")
             .addMigrations(PENDING_RECORD_MIGRATION_1_2, WEB_STATE_MIGRATION_2_3).build()
@@ -199,7 +204,22 @@ class MainActivity : ComponentActivity() {
         val respond: (JSONObject) -> Unit = { response -> reply(response.put("id", id).toString()) }
         when (envelope.optString("method")) {
             "saveExport" -> beginSave(envelope, respond)
-            "appInfo" -> respond(JSONObject().put("ok", true).put("value", JSONObject().put("version", BuildConfig.VERSION_NAME)))
+            "appInfo" -> respond(JSONObject().put("ok", true).put("value", JSONObject()
+                .put("version", BuildConfig.VERSION_NAME).put("versionCode", BuildConfig.VERSION_CODE)))
+            "checkAppUpdate" -> {
+                updater.check(envelope.optJSONObject("params")?.optBoolean("manual", false) == true)
+                respond(JSONObject().put("ok", true))
+            }
+            "appUpdatePrepared" -> {
+                val params = envelope.optJSONObject("params")
+                updatePreparation?.let { (token, deferred) ->
+                    if (params?.optString("token") == token) {
+                        if (params.optBoolean("ok")) deferred.complete(Unit)
+                        else deferred.completeExceptionally(IllegalStateException(params.optString("error", "请先保存当前内容")))
+                    }
+                }
+                respond(JSONObject().put("ok", true))
+            }
             "backgroundApp" -> { respond(JSONObject().put("ok", true)); moveTaskToBack(true) }
             else -> lifecycleScope.launch {
                 val response = runCatching { storage.handle(envelope) }
@@ -207,6 +227,25 @@ class MainActivity : ComponentActivity() {
                 respond(response)
             }
         }
+    }
+
+    private suspend fun prepareAppUpdate() {
+        val token = java.util.UUID.randomUUID().toString()
+        val completion = CompletableDeferred<Unit>()
+        updatePreparation = token to completion
+        try {
+            webView.evaluateJavascript("""
+                Promise.resolve().then(function () {
+                    if (!window.mossPrepareAppUpdate) throw new Error('页面尚未就绪，请稍后重试');
+                    return window.mossPrepareAppUpdate();
+                }).then(function () {
+                    return MossNative.call('appUpdatePrepared', {token:'$token',ok:true});
+                }, function (error) {
+                    return MossNative.call('appUpdatePrepared', {token:'$token',ok:false,error:error.message});
+                });
+            """.trimIndent(), null)
+            check(withTimeoutOrNull(10000) { completion.await(); true } == true) { "保存草稿超时，请确认内容后重试" }
+        } finally { updatePreparation = null }
     }
 
     private fun beginSave(envelope: JSONObject, reply: (JSONObject) -> Unit) {
@@ -232,6 +271,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        updater.close()
         legacyPort?.close()
         legacyPort = null
         (webView.parent as? ViewGroup)?.removeView(webView)

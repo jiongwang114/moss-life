@@ -1,5 +1,6 @@
 """Package the compatibility release with the existing update identity only."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
 import os
@@ -41,7 +42,9 @@ LOGS = ROOT / '.test-runs' / ('compat-' + VERSION)
 
 
 def run(args, env=None):
-    result = subprocess.run([str(x) for x in args], env=env, capture_output=True)
+    process_env = dict(env if env is not None else os.environ)
+    process_env['PYTHONIOENCODING'] = 'utf-8'
+    result = subprocess.run([str(x) for x in args], env=process_env, capture_output=True)
     if result.returncode:
         # Commands can contain signing flags; never print secret environment values.
         raise RuntimeError(result.stderr.decode(errors='replace')[:1500])
@@ -49,6 +52,10 @@ def run(args, env=None):
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--publish', action='store_true', help='Also publish reviewed, committed and pushed source to GitHub')
+    args = parser.parse_args()
     LOGS.mkdir(parents=True, exist_ok=True)
     for item in [SOURCE, BASELINE, PRIVATE/'signing.private.json', PRIVATE/'legacy-debug.keystore', PRIVATE/'moss-release.jks', PRIVATE/'moss.lineage']:
         assert item.is_file(), f'Required existing artifact missing: {item.name}'
@@ -104,8 +111,10 @@ def main():
                   device_tested=False, server_deployed=False)
     (ROOT/f'交付/MOSS-{VERSION}-安装包校验.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(report,ensure_ascii=False,indent=2))
-    # Publish every verified final delivery; retry the publisher if networking fails.
-    print(run([sys.executable, ROOT/'scripts/publish-release.py', OUTPUT]).strip())
+    print(run([sys.executable, ROOT/'scripts/prepare-app-update.py', OUTPUT]).strip())
+    # Packaging is a local action; online publication is explicit.
+    if args.publish:
+        print(run([sys.executable, ROOT/'scripts/publish-release.py', OUTPUT]).strip())
 
 
 if __name__=='__main__':
